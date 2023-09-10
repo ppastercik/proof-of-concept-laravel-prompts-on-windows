@@ -1,8 +1,8 @@
 {
-    "name": "laravel/laravel",
+    "name": "ppastercik/proof-of-concept-laravel-prompts-on-windows",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "Proof of concept of laravel/prompts on Windows command line with custom build of PHP with supporting functions",
+    "keywords": ["laravel", "console", "windows", "php"],
     "license": "MIT",
     "require": {
         "php": "^8.1",

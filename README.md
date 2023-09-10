@@ -1,66 +1,75 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Proof of concept of laravel/prompts on Windows command line
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## About
 
-## About Laravel
+This is a proof of concept that shows that it is possible to use intearactive command line in Windows if specific support functions are implemented in PHP.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+The interactivity is demonstrated on the `app:test` command using the [laravel/prompts](https://github.com/laravel/prompts) package, whose implementation is modified in this project to use PHP with specific support functions.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Custom build of PHP with support functions
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+For this laravel/prompts proof of concept, there is a special branch with proof of concept of PHP that implements specific support functions.
 
-## Learning Laravel
+The branch with the proof of concept of PHP is available there: https://github.com/ppastercik/php-src/tree/proof-of-concept-laravel-prompts-on-windows
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+To build this branch on Windows, use [the standard Windows build process](https://wiki.php.net/internals/windows/stepbystepbuild).
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+It contains support functions that are implemented similarly to the [`sapi_windows_vt100_support` function](https://www.php.net/manual/en/function.sapi-windows-vt100-support.php). This functions sets/gets the console mode for `STDIN` using the [`SetConsoleMode`](https://learn.microsoft.com/en-us/windows/console/setconsolemode)/[`GetConsoleMode`](https://learn.microsoft.com/en-us/windows/console/getconsolemode) functions.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+|Support function name               |Can be used on stream|Gets/sets mode               |
+|------------------------------------|---------------------|-----------------------------|
+|sapi_windows_echo_input_support     |STDIN that is a TTY  |ENABLE_ECHO_INPUT            |
+|sapi_windows_line_input_support     |STDIN that is a TTY  |ENABLE_LINE_INPUT            |
+|sapi_windows_processed_input_support|STDIN that is a TTY  |ENABLE_PROCESSED_INPUT       |
+|sapi_windows_vt100_input_support    |STDIN that is a TTY  |ENABLE_VIRTUAL_TERMINAL_INPUT|
 
-## Laravel Sponsors
+## Installation of proof of concept
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+This is a standard project, so install dependencies using the standard PHP build (^8.1):
 
-### Premium Partners
+```cmd
+composer install
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+If you want to install dependencies with a custom build of PHP that includes support functions, you must ignore PHP versions because it is forked from the master PHP branch, which is now PHP 8.4.0-dev and not officially supported by dependencies. Therefore, use:
+```cmd
+composer install --ignore-platform-req=php
+```
 
-## Contributing
+## Test laravel/prompts with CMD
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+You can use the full path to custom build of PHP or add it to the `PATH` environment variable by:
 
-## Code of Conduct
+```cmd
+set PATH={path-to-custom-build};%PATH%
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Then run the `app:test` command in the project folder.
 
-## Security Vulnerabilities
+When using the full PHP path, use:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```cmd
+{path-to-custom-build}\php.exe artisan app:test
+```
+
+When use PHP in `PATH` environment variable, use:
+
+```cmd
+php artisan app:test
+```
+
+### Result on PHP with support functions
+
+![Interactive console on Windows](console-use-special-functions.gif)
+
+### Result on PHP without support functions with fallback behavior (current behavior of laravel/prompts on Windows)
+
+![Fallback behavior](console-fallback-to-spatie-console.gif)
+
+### Result on PHP without support functions without fallback behavior
+
+![Broken laravel/prompts wihtou support functions](console-broken-without-special-functions.gif)
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+The proof of concept is under the [MIT license](LICENSE.md).
