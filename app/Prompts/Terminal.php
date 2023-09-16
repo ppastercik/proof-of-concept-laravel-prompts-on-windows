@@ -18,6 +18,22 @@ class Terminal extends PromptsTerminal
     protected ?int $initialWinTtyMode = null;
 
     /**
+     * Read a line from the terminal.
+     */
+    public function read(): string
+    {
+        $originalCp = sapi_windows_cp_get();
+
+        sapi_windows_cp_set(sapi_windows_cp_get('oem'));
+
+        $result = parent::read();
+
+        sapi_windows_cp_set($originalCp);
+
+        return '' !== $result ? sapi_windows_cp_conv(sapi_windows_cp_get('oem'), $originalCp, $result) : '';
+    }
+
+    /**
      * Set the TTY mode.
      */
     public function setTty(string $mode): void
