@@ -37,7 +37,7 @@ trait TypedValue
                     $this->submit();
 
                     return;
-                } elseif ($key === Key::BACKSPACE) {
+                } elseif ($key === Key::BACKSPACE || $key === Key::BACKSPACE_WIN) {
                     if ($this->cursorPosition === 0) {
                         return;
                     }

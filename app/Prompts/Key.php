@@ -7,4 +7,6 @@ use Laravel\Prompts\Key as PromptsKey;
 class Key extends PromptsKey
 {
     const ENTER_WIN = "\r";
+
+    const BACKSPACE_WIN = "\x08";
 }
